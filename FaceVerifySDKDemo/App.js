@@ -1,76 +1,126 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet, View, Button } from 'react-native';
 import WebView from 'react-native-webview';
+import Config from 'react-native-config';
 
 const App = () => {
+    const [webViewVisible, setWebViewVisible] = useState(true);
+
     const script = `
-            console.log = window.ReactNativeWebView.postMessage
-
-            // console.log(navigator.mediaDevices+'mediaa')
-
-
+            // Override the console.log function
+            console.log = (...args) => {
+            // Combine all arguments into a single string
+            const message = args.map(arg => {
+                // Convert each argument to a string, handling objects via JSON.stringify
+                return typeof arg === 'object' ? JSON.stringify(arg) : String(arg);
+            }).join(' ');
+            
+            // Send the combined message to the WebView
+            window.ReactNativeWebView.postMessage(message);
+            };
+            
+            // Configuration FaceVerify
             window.FV = new FaceVerify();
-            console.log(window.FV)
-            console.log('window', window)
             window.FV.init({
                 CONTAINER_ID: 'FV_mount',
                 LANGUAGE: 'en',
                 ASSETS_MODE: "LOCAL",
                 ASSETS_FOLDER: window.location.href.replace('index.html', 'assets'),
                 DEBUG: true,
-                TOKEN: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGxvd2VkX3Nka19saXN0IjpbIkFVVE9fQ0FQVFVSRSIsIkZBQ0VfVkVSSUZZIiwiTkZDIl0sImNoYWxsZW5nZXMiOlsidXAiLCJyaWdodCJdLCJkZW1vIjp0cnVlLCJ0cmFuc2FjdGlvbl9pZCI6IjkxNGNlYjQ0LTViZWYtNDA3YS1iZWYwLWE2NDY5OTM2NGViZSIsImV4cCI6MTc1MTI3NzYwMH0.glotYAX0FH2vR9SwVWJ2jB2aYPpFxknudca3DBoa1MZbSRY1JiteGhcQbMik2_HQFebZ5OxrXUDS7fH8PTwI1KqnOOfJBTJ2q3bth6x8bOsztDtopBP9kdlYR2MMfFRE2MqGBztvWosv7aD2Bn0Lfb1M1h-BgThnQEBmMGS_zgEH-q11FbaV2xcySml6ELCkFW7ICSqJylR1faNMggsbJC0agdv60P4t3do8JdD6PvxmW0JxYVxRN3_kNC1lWnTGJ5UJl912MuL9YOSsLwfaTpuGMAYrAzxBkIWqH_N9xIw_NH-azcdB4yPMUPKttu29IHYIs0Q2cyi8UqmSHlch2TK31B4H-F1MqNtLKAMtyWVytzps3Np2AuSdp4g946qsJJ3DCWwWTcnYGS-u1ZRHwyssAuE5uQdDuJ7YOtNP73uELqBs95ODHYYM0849lG5pMjViYNatTcQgF7e5ormBaaa9Yc5qiiIuH3hs8A98VOTvIl5gYwbz0DwdFEeyrVuI8k-t3SA1UUJAwoNtHm70bPmFPKzSleYl-ugWmBXPMOJi5wuE0V0OHI4jJN4vvAz3k_LpEAhinQe_L4AS1QwtZjeb-KumEbMWQ_3JerJ7xe0fb_RkJaMDtYkl6Sb8ftX_mhpy5qGgqNihyyRyweGrcuvOT3Qz8EUCZVSdK-NcAMM",
+                TOKEN: "${Config.TOKEN}",
                 onComplete: function(data) {
-                    console.log(data);
-                    window.webkit.messageHandlers.output.postMessage(data);
+                    const message = JSON.stringify({ type: 'complete', data: data });
+                    window.ReactNativeWebView.postMessage(message);
                     FV.stop();
                 },
-                onError: function(error) {
-                    console.log(error);
+                onError: function(data) {
+                    const message = JSON.stringify({ type: 'error', data: data });
+                    window.ReactNativeWebView.postMessage(message);
                     FV.stop();
                 },
-                onUserExit: function(error) {
-                    console.log(error);
+                onUserExit: function(data) {
+                    const message = JSON.stringify({ type: 'exit', data: data });
+                    window.ReactNativeWebView.postMessage(message);
                     FV.stop();
                 }
             });
         `
 
-  return (
-    <SafeAreaView style={styles.flexContainer}>
-      <WebView
-        useWebKit
-        source={{uri: './www/dist/index.html'}}
-        javaScriptEnabled={true}
-        originWhitelist={['*', 'https://*', 'http://*', 'data:*']}
-        domStorageEnabled={true}
-        allowFileAccess={true}
-        style={styles.flexContainer}
-        injectedJavaScript={script}
-        startInLoadingState={true}
-        allowsInlineMediaPlayback={true} // Allows inline playback of videos on iOS
-        allowUniversalAccessFromFileURLs={true} // important for local files accessing camera
-        mediaPlaybackRequiresUserAction={false} // Autoplay videos or access camera without user gestures
-        mediaCapturePermissionGrantType={'grant'}
-        // Add this prop to ensure permissions are handled
-        onPermissionRequest={(request) => request.grant(request.resources)}
-        onMessage={(event) => {
-            // Log the message to the console
-            // console.log(event);
-            console.log(event.nativeEvent.data);
-          }}
-        onError={(event) => {
-            // Log the message to the console
-            // console.log(event);
-            console.log(event.nativeEvent.data);
-          }}
-        />
-    </SafeAreaView>
-  );
+    const handleMessage = (event) => {
+        let message;
+        try {
+            message = JSON.parse(event.nativeEvent.data);
+        } catch (e) {
+            // If there's a parsing error, assume the data is a plain text or unknown format
+            message = { type: 'webViewLog', data: { message: event.nativeEvent.data } };
+        }
+                
+        switch (message.type) {
+            case 'complete':
+            console.log('Completion data:', message.data);
+            setWebViewVisible(false);
+            break;
+            case 'error':
+            console.log('Error:', message.data);
+            setWebViewVisible(false);
+            break;
+            case 'exit':
+            console.log('User exited:', message.data);
+            setWebViewVisible(false);
+            break;
+            case 'webViewLog':
+            console.log('webViewLog:', message.data);
+            break;
+            default:
+            console.log('Received unknown message type.');
+            console.log(message)
+            setWebViewVisible(false);
+        }
+    };
+          
+
+    return (
+        <SafeAreaView style={styles.flexContainer}>
+        {webViewVisible ? (
+            <WebView
+                useWebKit
+                source={{uri: './www/dist/index.html'}}
+                javaScriptEnabled={true}
+                originWhitelist={['*', 'https://*', 'http://*', 'data:*']}
+                domStorageEnabled={true}
+                allowFileAccess={true}
+                style={styles.flexContainer}
+                injectedJavaScript={script}
+                startInLoadingState={true}
+                allowsInlineMediaPlayback={true} // Allows inline playback of videos on iOS
+                allowUniversalAccessFromFileURLs={true} // important for local files accessing camera
+                mediaPlaybackRequiresUserAction={false} // Autoplay videos or access camera without user gestures
+                mediaCapturePermissionGrantType={'grant'}
+                // Add this prop to ensure permissions are handled
+                onPermissionRequest={(request) => request.grant(request.resources)}
+                onMessage={handleMessage}
+                onError={(event) => {
+                    console.log(event.nativeEvent.data);
+                    setWebViewVisible(false);
+                }}
+                />
+            ) : (
+            <View style={styles.centeredContent}>
+                <Button title="Reload WebView" onPress={() => setWebViewVisible(true)} />
+            </View>
+        )}
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
   flexContainer: {
     flex: 1
+  },
+  centeredContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 });
 
