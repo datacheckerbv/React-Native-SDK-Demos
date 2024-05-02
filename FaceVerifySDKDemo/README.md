@@ -45,5 +45,5 @@ Add necessary permissions in the `info.plist` to ensure the app has access to re
 Finally, build and run your application using the following command to ensure all configurations are applied:
 
 ```bash
-npx react-native run-ios --clean
+npx react-native run-ios
 ```

@@ -1,10 +1,13 @@
 # React-Native-SDK-Demos
 
-## iOS
-
-### Pods
+## FaceVerify
 
 ```bash
-cd FaceVerifyDemo/ios
-pod install
+cd FaceVerifySDKDemo
+```
+
+## AutoCapture
+
+```bash
+cd AutoCaptureSDKDemo
 ```

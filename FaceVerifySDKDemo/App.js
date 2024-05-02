@@ -26,7 +26,6 @@ const App = () => {
                 LANGUAGE: 'en',
                 ASSETS_MODE: "LOCAL",
                 ASSETS_FOLDER: window.location.href.replace('index.html', 'assets'),
-                DEBUG: true,
                 TOKEN: "${Config.TOKEN}",
                 onComplete: function(data) {
                     const message = JSON.stringify({ type: 'complete', data: data });
@@ -50,8 +49,10 @@ const App = () => {
         let message;
         try {
             message = JSON.parse(event.nativeEvent.data);
+            if (!message.type) {
+                message = { type: 'webViewLog', data: message };
+            }
         } catch (e) {
-            // If there's a parsing error, assume the data is a plain text or unknown format
             message = { type: 'webViewLog', data: { message: event.nativeEvent.data } };
         }
                 
@@ -72,7 +73,7 @@ const App = () => {
             console.log('webViewLog:', message.data);
             break;
             default:
-            console.log('Received unknown message type.');
+            console.log('Received unknown message type.', message.type);
             console.log(message)
             setWebViewVisible(false);
         }
