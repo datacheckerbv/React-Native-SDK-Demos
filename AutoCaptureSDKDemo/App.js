@@ -6,7 +6,7 @@ import Config from 'react-native-config';
 import * as RNFS from 'react-native-fs';  // if using react-native-fs to resolve file paths
 
 const localFilePath = Platform.OS === 'ios' ? `file://${RNFS.MainBundlePath}/www/dist/index.html` : `file:///android_asset/www/dist/index.html`;
-const localDirPath = Platform.OS === 'ios' ? `file://${RNFS.MainBundlePath}/www/dist/assets` : 'file:///android_asset/www/dist/assets';
+const localDirPath = Platform.OS === 'ios' ? `file://${RNFS.MainBundlePath}/www/dist/assets` : 'https://appassets.androidplatform.net/assets/www/dist/assets';
 
 const App = () => {
     const [webViewVisible, setWebViewVisible] = useState(true);

@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -116,3 +117,14 @@ dependencies {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+// Add this task to copy assets
+task copyAssets(type: Copy) {
+    // Replace '/path/to/your/www' with the actual path to your 'www' folder
+    from '../../www'
+    // The destination path inside your project
+    into 'src/main/assets/www'
+}
+
+// Make sure to run copyAssets before the build starts
+preBuild.dependsOn(copyAssets)
