@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, Button, Platform } from 'react-native';
 import WebView from 'react-native-webview';
 import Config from 'react-native-config';
+import * as RNFS from 'react-native-fs';
+import CustomWebView from './CustomWebView'; // Import the custom WebView component for Android
 
-import * as RNFS from 'react-native-fs';  // if using react-native-fs to resolve file paths
 
-const localFilePath = Platform.OS === 'ios' ? `file://${RNFS.MainBundlePath}/www/dist/index.html` : `file:///android_asset/www/dist/index.html`;
+const localFilePath = Platform.OS === 'ios' ? `file://${RNFS.MainBundlePath}/www/dist/index.html` : `https://appassets.androidplatform.net/assets/www/dist/index.html`;
 const localDirPath = Platform.OS === 'ios' ? `file://${RNFS.MainBundlePath}/www/dist/assets` : 'https://appassets.androidplatform.net/assets/www/dist/assets';
 
 const App = () => {
@@ -87,30 +88,39 @@ const App = () => {
 
     return (
         <SafeAreaView style={styles.flexContainer}>
-        {webViewVisible ? (
-            <WebView
-                source={{uri: localFilePath}}
-                javaScriptEnabled={true}
-                originWhitelist={['*']}
-                domStorageEnabled={true}
-                style={styles.flexContainer}
-                injectedJavaScript={script}
-                allowsInlineMediaPlayback={true}
-                allowUniversalAccessFromFileURLs={true}
-                allowFileAccess={true}
-                mediaPlaybackRequiresUserAction={false}
-                mediaCapturePermissionGrantType={'grant'}
-                onMessage={handleMessage}
-                onError={(event) => {
-                    console.log(event.nativeEvent.data);
-                    setWebViewVisible(false);
-                }}
-                />
+            {webViewVisible ? (
+                Platform.OS === 'android' ? (
+                    <CustomWebView
+                        source={{uri: localFilePath}}
+                        injectedJavaScript={script}
+                        style={styles.flexContainer}
+                        onMessage={handleMessage}
+                    />
+                ) : (
+                    <WebView
+                        source={{uri: localFilePath}}
+                        javaScriptEnabled={true}
+                        originWhitelist={['*']}
+                        domStorageEnabled={true}
+                        style={styles.flexContainer}
+                        injectedJavaScript={script}
+                        allowsInlineMediaPlayback={true}
+                        allowUniversalAccessFromFileURLs={true}
+                        allowFileAccess={true}
+                        mediaPlaybackRequiresUserAction={false}
+                        mediaCapturePermissionGrantType={'grant'}
+                        onMessage={handleMessage}
+                        onError={(event) => {
+                            console.log(event.nativeEvent.data);
+                            setWebViewVisible(false);
+                        }}
+                    />
+                )
             ) : (
-            <View style={styles.centeredContent}>
-                <Button title="Reload WebView" onPress={() => setWebViewVisible(true)} />
-            </View>
-        )}
+                <View style={styles.centeredContent}>
+                    <Button title="Reload WebView" onPress={() => setWebViewVisible(true)} />
+                </View>
+            )}
         </SafeAreaView>
     );
 };

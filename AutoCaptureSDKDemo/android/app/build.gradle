@@ -114,17 +114,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    implementation("androidx.webkit:webkit:1.4.0")
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
-
-// Add this task to copy assets
-task copyAssets(type: Copy) {
-    // Replace '/path/to/your/www' with the actual path to your 'www' folder
-    from '../../www'
-    // The destination path inside your project
-    into 'src/main/assets/www'
-}
-
-// Make sure to run copyAssets before the build starts
-preBuild.dependsOn(copyAssets)
