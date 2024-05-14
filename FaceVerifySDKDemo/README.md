@@ -50,6 +50,8 @@ npx react-native run-ios
 
 ## Android Specific Setup
 
+For Android, using the `react-native-webview` component to load the SDK locally is not possible. This is because Android does not allow fetching from `file://` URLs. Instead, it only permits loading from `https://` URLs. Therefore, the files need to be hosted, either internally or externally. To host the files internally, we created a `CustomWebView` component specifically for Android.
+
 ### Linking the SDK (Android)
 
 To link the assets for your Android project, run the following commands in your terminal:
