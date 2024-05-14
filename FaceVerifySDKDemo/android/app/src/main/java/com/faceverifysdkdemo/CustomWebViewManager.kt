@@ -1,4 +1,4 @@
-package com.autocapturesdkdemo
+package com.faceverifysdkdemo
 
 import android.Manifest
 import android.app.Activity
@@ -39,6 +39,7 @@ class CustomWebViewManager(private val reactContext: ReactApplicationContext) : 
         return webView
     }
 
+
     // Configures the WebView settings and clients
     private fun configureWebView(webView: WebView, context: Context) {
         val assetLoader = WebViewAssetLoader.Builder()
@@ -69,6 +70,7 @@ class CustomWebViewManager(private val reactContext: ReactApplicationContext) : 
         webView.webChromeClient = object : WebChromeClient() {
             // Grants permissions requested by the web page
             override fun onPermissionRequest(request: android.webkit.PermissionRequest) {
+                Log.d("ReactNativeWebView", "Message received: RESOURCESSSSSSSS")
                 request.grant(request.resources)
             }
         }

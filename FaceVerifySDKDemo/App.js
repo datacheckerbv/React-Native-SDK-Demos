@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Button } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Button, Platform } from 'react-native';
 import WebView from 'react-native-webview';
 import Config from 'react-native-config';
+import * as RNFS from 'react-native-fs';
+import CustomWebView from './CustomWebView'; // Import the custom WebView component for Android
+
+
+const localFilePath = Platform.OS === 'ios' ? `file://${RNFS.MainBundlePath}/www/dist/index.html` : `https://appassets.androidplatform.net/assets/www/dist/index.html`;
+const localDirPath = Platform.OS === 'ios' ? `file://${RNFS.MainBundlePath}/www/dist/assets` : 'https://appassets.androidplatform.net/assets/www/dist/assets';
 
 const App = () => {
     const [webViewVisible, setWebViewVisible] = useState(true);
@@ -25,7 +31,7 @@ const App = () => {
                 CONTAINER_ID: 'FV_mount',
                 LANGUAGE: 'en',
                 ASSETS_MODE: "LOCAL",
-                ASSETS_FOLDER: window.location.href.replace('index.html', 'assets'),
+                ASSETS_FOLDER: "${localDirPath}",
                 TOKEN: "${Config.TOKEN}",
                 onComplete: function(data) {
                     const message = JSON.stringify({ type: 'complete', data: data });
@@ -82,34 +88,39 @@ const App = () => {
 
     return (
         <SafeAreaView style={styles.flexContainer}>
-        {webViewVisible ? (
-            <WebView
-                useWebKit
-                source={{uri: './www/dist/index.html'}}
-                javaScriptEnabled={true}
-                originWhitelist={['*', 'https://*', 'http://*', 'data:*']}
-                domStorageEnabled={true}
-                allowFileAccess={true}
-                style={styles.flexContainer}
-                injectedJavaScript={script}
-                startInLoadingState={true}
-                allowsInlineMediaPlayback={true} // Allows inline playback of videos on iOS
-                allowUniversalAccessFromFileURLs={true} // important for local files accessing camera
-                mediaPlaybackRequiresUserAction={false} // Autoplay videos or access camera without user gestures
-                mediaCapturePermissionGrantType={'grant'}
-                // Add this prop to ensure permissions are handled
-                onPermissionRequest={(request) => request.grant(request.resources)}
-                onMessage={handleMessage}
-                onError={(event) => {
-                    console.log(event.nativeEvent.data);
-                    setWebViewVisible(false);
-                }}
-                />
+            {webViewVisible ? (
+                Platform.OS === 'android' ? (
+                    <CustomWebView
+                        source={{uri: localFilePath}}
+                        injectedJavaScript={script}
+                        style={styles.flexContainer}
+                        onMessage={handleMessage}
+                    />
+                ) : (
+                    <WebView
+                        source={{uri: localFilePath}}
+                        javaScriptEnabled={true}
+                        originWhitelist={['*']}
+                        domStorageEnabled={true}
+                        style={styles.flexContainer}
+                        injectedJavaScript={script}
+                        allowsInlineMediaPlayback={true}
+                        allowUniversalAccessFromFileURLs={true}
+                        allowFileAccess={true}
+                        mediaPlaybackRequiresUserAction={false}
+                        mediaCapturePermissionGrantType={'grant'}
+                        onMessage={handleMessage}
+                        onError={(event) => {
+                            console.log(event.nativeEvent.data);
+                            setWebViewVisible(false);
+                        }}
+                    />
+                )
             ) : (
-            <View style={styles.centeredContent}>
-                <Button title="Reload WebView" onPress={() => setWebViewVisible(true)} />
-            </View>
-        )}
+                <View style={styles.centeredContent}>
+                    <Button title="Reload WebView" onPress={() => setWebViewVisible(true)} />
+                </View>
+            )}
         </SafeAreaView>
     );
 };

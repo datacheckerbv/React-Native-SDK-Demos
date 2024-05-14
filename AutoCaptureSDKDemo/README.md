@@ -61,9 +61,10 @@ ln -s "$(realpath ./www)" android/app/src/main/assets/www
 
 ### Managing Dependencies (Android)
 
-Add the following dependency to your `build.gradle` file to manage web components:
+Add the following dependency to your `build.gradle` file to manage web components and environment configurations:
 
 ```gradle
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 implementation("androidx.webkit:webkit:1.4.0")
 ```
 

@@ -5,3 +5,4 @@
 .env
 
 # Android
+*/*/*/*/main/assets/www
