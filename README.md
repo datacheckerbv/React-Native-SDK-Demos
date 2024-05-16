@@ -6,16 +6,24 @@ Welcome! This repository serves the purpose of demonstrating the implementation 
 
 ### FaceVerify
 
-The FaceVerify project showcases the integration of our FaceVerify SDK. Follow the steps below to get started:
+The FaceVerify project demonstrates the integration of our FaceVerify SDK. To get started, follow these steps:
 
-```bash
-cd FaceVerifySDKDemo
-```
+1. Navigate to the project directory:
+
+    ```bash
+    cd FaceVerifySDKDemo
+    ```
+
+2. For further instructions, please refer to the [FaceVerify README](FaceVerifySDKDemo/README.md).
 
 ### AutoCapture
 
-The AutoCapture project demonstrates the use of our AutoCapture SDK. Follow the steps below to get started:
+The AutoCapture project demonstrates the integration of our AutoCapture SDK. To get started, follow these steps:
 
-```bash
-cd AutoCaptureSDKDemo
-```
+1. Navigate to the project directory:
+
+    ```bash
+    cd AutoCaptureSDKDemo
+    ```
+
+2. For further instructions, please refer to the [AutoCapture README](AutoCaptureSDKDemo/README.md).

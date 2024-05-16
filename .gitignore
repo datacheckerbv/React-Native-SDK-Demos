@@ -1,8 +1,5 @@
 # OSX
 .DS_Store
 
-# SDK
-.env
-
 # Android
 */*/*/*/main/assets/www

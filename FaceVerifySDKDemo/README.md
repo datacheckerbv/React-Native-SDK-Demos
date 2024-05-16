@@ -1,4 +1,4 @@
-# React-Native-SDK-Demos
+# FaceVerify-SDK-Demo
 
 ## Overview
 
@@ -6,9 +6,11 @@ This guide provides the necessary steps to set up and run the React Native SDK d
 
 ## Prerequisites
 
-1. **Copy SDK:** Place the FaceVerify SDK into a shared folder named `www`. This folder will act as the central location from which both Android and iOS projects will link to the SDK.
+1. **Install Node.js and npm:** Make sure Node.js and npm are installed on your system. You can download them from [nodejs.org](https://nodejs.org/).
 
-2. **Environment Variables:** Create an `.env` file at the root of your project to store configuration like your SDK token. This helps in keeping sensitive information out of your code base.
+2. **Copy SDK:** Place the FaceVerify SDK into a shared folder named `www`. This folder will act as the central location from which both Android and iOS projects will link to the SDK.
+
+3. **Environment Variables:** Create an `.env` file at the root of your project to store configuration like your SDK token. This helps in keeping sensitive information out of your code base.
 
 ```plaintext
 TOKEN="YOUR_SDK_TOKEN"
@@ -16,11 +18,23 @@ TOKEN="YOUR_SDK_TOKEN"
 
 ## iOS Specific Setup
 
+### Signing Capabilities
+
+To set up signing capabilities in Xcode, please follow these steps:
+
+1. Open your project in Xcode.
+2. Navigate to the **Signing & Capabilities** tab.
+3. Under the **Team** section, select your development team from the dropdown menu.
+
+This ensures that your app is properly signed for deployment on iOS devices.
+
 ### Managing Dependencies with CocoaPods (iOS)
 
 Before proceeding, make sure CocoaPods is installed on your system. Run the following command in the terminal within your iOS project directory:
 
 ```bash
+npm install
+cd ios
 pod install
 ```
 
@@ -42,7 +56,13 @@ Add necessary permissions in the `info.plist` to ensure the app has access to re
 
 ### Building and Running (iOS)
 
-Finally, build and run your application using the following command to ensure all configurations are applied:
+Before building your application, make sure to clean the build folder to avoid any potential issues. You can do this by:
+
+1. Opening Xcode.
+2. Selecting **Product** from the menu bar.
+3. Choosing **Clean Build Folder**.
+
+Once the build folder is cleaned, you can proceed with building and running your application. Use the following command to ensure all configurations are correctly applied:
 
 ```bash
 npx react-native run-ios
